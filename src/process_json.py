@@ -1,35 +1,40 @@
 import json
-import typing as t
+import pydantic
 
 with open("data/data.json", "r") as f:
     d = json.load(f)
 
 
-class FileComment(t.TypedDict):
+class FileComment(pydantic.BaseModel):
     user: str
     comment: str
     timestamp: str
 
 
-class FileData(t.TypedDict):
+class FileData(pydantic.BaseModel):
     title: str
     text: str
     author: str
     id: int
     tags: list[str]
-    is_active: t.NotRequired[bool]
-    comments: t.NotRequired[list[FileComment]]
+    is_active: bool = False
+    comments: list[FileComment] = pydantic.Field(default_factory=list)
 
 
-data: list[FileData] = d["files"]
-for file in data:
-    print(f"Title: {file['title']}")
-    print(f"Author: {file['author']}")
-    print(f"Tags: {', '.join(file['tags'])}")
-    print(f"Active: {file['is_active']}")
+class DataSchema(pydantic.BaseModel):
+    files: list[FileData]
+
+
+model = DataSchema(files=d["files"])
+print(model)
+
+for file in model.files:
+    print(f"Title: {file.title}")
+    print(f"Author: {file.author}")
+    print(f"Tags: {', '.join(file.tags)}")
+    print(f"Active: {file.is_active}")
     print("Comments:")
-    for comment in file["comments"]:
-        print(
-            f" - {comment['user']} said: {comment['comment']} at {comment['timestamp']}"
-        )
+    for comment in file.comments:
+        print(f" - {comment.user} said: {comment.comment} at {comment.timestamp}")
+
     print("-" * 40)
