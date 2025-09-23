@@ -1,3 +1,3 @@
-id,title,author,desc
-1,Bible,God,
-2,Harry Potter,JK Rowling,Book about wizards
+id;title;author;desc
+1;Bible;God;
+2;Harry Potter;JK Rowling;Book about wizards

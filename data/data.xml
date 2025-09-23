@@ -1,0 +1,15 @@
+<book>
+    <title>Python Kurs</title>
+    <author>Geo Olekom</author>
+    <chapter>
+        <title>Einführung in Python</title>
+        <section>
+            <title>Grundlagen</title>
+            <paragraph>In diesem Kapitel werden die Grundlagen von Python behandelt.</paragraph>
+        </section>
+        <section>
+            <title>Fortgeschrittene Themen</title>
+            <paragraph>In diesem Kapitel werden fortgeschrittene Themen behandelt.</paragraph>
+        </section>
+    </chapter>
+</book>

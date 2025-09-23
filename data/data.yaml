@@ -1,0 +1,10 @@
+files:
+  - title: data.yaml
+    description: A YAML file containing configuration data.
+    rating: 1
+    is_private: false
+    updated_by: null
+    tags:
+      - yaml
+      - configuration
+      - data
