@@ -1,5 +1,6 @@
 import json
 import pydantic
+import pandas as pd
 
 with open("data/data.json", "r") as f:
     d = json.load(f)
@@ -38,3 +39,10 @@ for file in model.files:
         print(f" - {comment.user} said: {comment.comment} at {comment.timestamp}")
 
     print("-" * 40)
+
+with open("output.json", "w") as f:
+    f.write(model.model_dump_json(indent=2))
+
+
+df = pd.read_json("data/data.json")
+print(df["files"])

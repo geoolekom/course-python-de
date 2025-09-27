@@ -1,4 +1,4 @@
-from src.utils.add import add
+from utils.add import add
 
 
 def main() -> None:
