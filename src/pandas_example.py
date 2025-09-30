@@ -5,7 +5,7 @@ messy_data = pd.DataFrame(
     {
         "user_id": [1, 2, 2, 3, None, 4],
         "age": [25, None, 30, -5, 150, "unknown"],
-        "salary": [50000, 75000, 75000, None, 999999, "60.000"],
+        "salary": [50000, 75000, 75000, None, 999999, "60,000"],
         "email": [
             "alice@test.com",
             "",
@@ -46,24 +46,19 @@ def safe_type_conversion(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def salary_default(x: float) -> float:
-    if pd.notna(x):
-        return x
-    else:
-        return 1000
+def clean_commas(df: pd.DataFrame) -> pd.DataFrame:
+    for i, element in enumerate(df["salary"]):
+        if isinstance(element, str):
+            df["salary"][i] = element.replace(",", "")
+    return df
 
 
-print("-----")
-df_typed = safe_type_conversion(messy_data.copy())
-df_typed["salary"] = df_typed["salary"].apply(salary_default)
+def clean_salaries(df: pd.DataFrame) -> pd.DataFrame:
+    for i, element in enumerate(df["salary"]):
+        if not pd.notna(element):
+            df["salary"][i] = 1000
+    return df
+
+
+df_typed = messy_data.pipe(clean_commas).pipe(safe_type_conversion).pipe(clean_salaries)
 print(df_typed)
-print("-----")
-
-print("-----RANGE-----")
-print(list(range(0, 3)))
-
-print("-----SLICING-----")
-print(df_typed[["salary", "age"]][0:3])
-print(df_typed.iloc[0:3, [1, 2]])
-print(df_typed[df_typed["age"] > 20])
-print("-------------")
