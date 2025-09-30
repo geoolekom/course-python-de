@@ -1,3 +1,4 @@
+from typing import Any
 import pandas as pd
 
 dates = pd.date_range("2024-01-01", periods=6, freq="D")
@@ -60,5 +61,17 @@ def clean_salaries(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-df_typed = messy_data.pipe(clean_commas).pipe(safe_type_conversion).pipe(clean_salaries)
-print(df_typed)
+df_typed = (
+    messy_data.copy().pipe(clean_commas).pipe(safe_type_conversion).pipe(clean_salaries)
+)
+# print(df_typed)
+
+numbers_df = messy_data.copy().pipe(safe_type_conversion)[["age", "salary"]]
+
+
+def replace_nan_with_zero(x: Any) -> Any:
+    return x if pd.notna(x) else 0
+
+
+print(numbers_df)
+print(numbers_df.map(replace_nan_with_zero))
