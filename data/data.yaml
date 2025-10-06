@@ -8,3 +8,8 @@ files:
       - yaml
       - configuration
       - data
+
+meta:
+  version: 1
+  created: 2024-10-05T12:00:00Z
+  updated: 2024-10-05T12:00:00Z

@@ -1,4 +1,4 @@
-<book>
+<book xmlns="http://www.example.org/book" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.example.org/book book.xsd">
     <title>Python Kurs</title>
     <author>Geo Olekom</author>
     <chapter>

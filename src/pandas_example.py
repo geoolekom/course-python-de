@@ -68,10 +68,21 @@ df_typed = (
 
 numbers_df = messy_data.copy().pipe(safe_type_conversion)[["age", "salary"]]
 
+print("Grouped by user_id with sum aggregation:")
+print(
+    messy_data.copy()
+    .pipe(safe_type_conversion)[["user_id", "salary"]]
+    .groupby("user_id")
+    .agg("sum")
+)
+
 
 def replace_nan_with_zero(x: Any) -> Any:
     return x if pd.notna(x) else 0
 
 
-print(numbers_df)
-print(numbers_df.map(replace_nan_with_zero))
+print(
+    numbers_df.map(replace_nan_with_zero).agg(
+        {"salary": ["sum", "count"], "age": "min"}
+    )
+)
