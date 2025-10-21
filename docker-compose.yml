@@ -8,3 +8,14 @@ services:
       - "3306:3306"
     volumes:
       - ./data/mariadb:/var/lib/mysql
+
+  mongodb:
+    image: mongo:7.0
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: secret
+      MONGO_INITDB_DATABASE: pythonde
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data/mongo:/data/db
