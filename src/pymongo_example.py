@@ -1,22 +1,52 @@
+from datetime import datetime
 from typing import Any
+from pydantic import BaseModel, Field, TypeAdapter, field_validator
 from pymongo import MongoClient
 
 
 MONGO_URL = "mongodb://root:secret@localhost:27017/"
 client: MongoClient[dict[str, Any]] = MongoClient(MONGO_URL)
-
 users_col = client.pythonde.users
-r = users_col.find()
-print("Users in MongoDB:")
-for user in r:
-    print(type(user), user)
 
-new_user = {
-    "username": "charlie",
-    "email": "charlie@excample.com",
-    "profile": {"age": 28, "interests": ["hiking", "photography"]},
-    "orders": [{"order_id": 1, "product": "Camera", "amount": 1200}],
-}
 
-insert_result = users_col.insert_one(new_user)
-print("Inserted user ID:", insert_result.inserted_id)
+class Profile(BaseModel):
+    age: int | None = None
+    city: str | None = None
+    interests: list[str] | None = None
+
+
+class MongoUser(BaseModel):
+    id: str = Field(alias="_id")
+    username: str
+    email: str
+    profile: Profile
+    created_at: datetime | None = None
+
+    @field_validator("id", mode="before")
+    @classmethod
+    def validate_id(cls, v: Any) -> str:
+        return str(v)
+
+
+MongoUserList = TypeAdapter(list[MongoUser])
+
+
+def list_users() -> list[MongoUser]:
+    users = users_col.find()
+    cleaned_users = MongoUserList.validate_python(list(users))
+    return cleaned_users
+
+
+def get_user_by_username(username: str) -> MongoUser | None:
+    user_data = users_col.find_one({"username": username})
+    if user_data:
+        return MongoUser.model_validate(user_data)
+    return None
+
+
+if __name__ == "__main__":
+    users = list_users()
+    with open("data/mongo_users.json", "wb") as f:
+        f.write(MongoUserList.dump_json(users, indent=2))
+
+    print("Mongo user with username 'alice':", get_user_by_username("alice"))
