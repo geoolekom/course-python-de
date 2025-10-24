@@ -17,5 +17,3 @@ class Base(DeclarativeBase):
 
 
 Session = sessionmaker(bind=engine)
-
-Base.metadata.create_all(engine)
