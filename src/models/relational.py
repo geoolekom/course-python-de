@@ -18,10 +18,12 @@ class ScientificArticle(Base):
     __tablename__ = "scientific_articles"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    title: Mapped[str] = mapped_column(String(50))
-    summary: Mapped[str] = mapped_column(String(200))
+    title: Mapped[str] = mapped_column(String(200))
+    summary: Mapped[str] = mapped_column(String(500))
     file_path: Mapped[str] = mapped_column(String(200))
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
+
+    arxiv_id: Mapped[str] = mapped_column(String(50), unique=True)
 
     author_id: Mapped[int] = mapped_column(ForeignKey("authors.id"), nullable=True)
     author = relationship("Author", back_populates="articles")
