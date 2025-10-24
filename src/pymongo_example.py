@@ -10,13 +10,19 @@ users_col = client.pythonde.users
 
 
 class Profile(BaseModel):
+    class Config:
+        from_attributes = True
+
     age: int | None = None
     city: str | None = None
     interests: list[str] | None = None
 
 
 class MongoUser(BaseModel):
-    id: str = Field(alias="_id")
+    class Config:
+        from_attributes = True
+
+    id: str = Field(alias="id")
     username: str
     email: str
     profile: Profile

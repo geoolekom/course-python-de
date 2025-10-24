@@ -10,6 +10,7 @@ from mongoengine import (
     EmbeddedDocumentListField,
 )
 from datetime import datetime
+from pymongo_example import MongoUser, MongoUserList
 
 MONGO_URL = "mongodb://root:secret@localhost:27017/"
 connect("pythonde", host=MONGO_URL)
@@ -38,6 +39,19 @@ class User(Document):  # type: ignore[misc]
     orders = EmbeddedDocumentListField(Order)
 
 
-result = User.objects()
-for engine_user in result:
-    print("MongoEngine User:", engine_user.username, engine_user.profile.city)
+def list_users() -> list[MongoUser]:
+    return MongoUserList.validate_python(User.objects.all())
+
+
+if __name__ == "__main__":
+    print("All users in MongoDB:")
+    for user in list_users():
+        print(
+            [user.id],
+            f"Username: {user.username}, Email: {user.email}, Created At: {user.created_at}",
+        )
+
+    users = list_users()
+
+    with open("data/mongoengine_users.json", "wb") as f:
+        f.write(MongoUserList.dump_json(users, indent=2))
