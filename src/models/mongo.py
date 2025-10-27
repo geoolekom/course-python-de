@@ -9,7 +9,7 @@ from mongoengine import (
 
 
 class Author(EmbeddedDocument):  # type: ignore[misc]
-    id = IntField(required=True)
+    db_id = IntField(required=True)
     full_name = StringField()
     title = StringField()
 
@@ -17,10 +17,10 @@ class Author(EmbeddedDocument):  # type: ignore[misc]
 class ScientificArticle(Document):  # type: ignore[misc]
     meta = {
         "collection": "articles",
-        "indexes": ["id", "arxiv_id"],
+        "indexes": ["db_id", "arxiv_id"],
     }
 
-    id = IntField(required=True)
+    db_id = IntField(required=True)
 
     title = StringField()
     summary = StringField()
