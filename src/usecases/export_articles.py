@@ -1,3 +1,4 @@
+import pymupdf4llm
 from sqlalchemy import select
 from models.relational import ScientificArticle
 from models.mongo import ScientificArticle as MongoArticle, Author as MongoAuthor
@@ -16,6 +17,7 @@ def export_from_db() -> None:
                 full_name=article.author.full_name,
                 title=article.author.title,
             )
+            md_text = pymupdf4llm.to_markdown(article.file_path)
             try:
                 m_article = MongoArticle.objects.get(arxiv_id=article.arxiv_id)
                 m_article.update(
@@ -26,6 +28,7 @@ def export_from_db() -> None:
                     created_at=article.created_at,
                     arxiv_id=article.arxiv_id,
                     author=m_author,
+                    text=md_text,
                 )
             except DoesNotExist:
                 m_article = MongoArticle(
@@ -36,6 +39,7 @@ def export_from_db() -> None:
                     created_at=article.created_at,
                     arxiv_id=article.arxiv_id,
                     author=m_author,
+                    text=md_text,
                 )
                 m_article.save()
 

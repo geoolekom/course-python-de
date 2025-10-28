@@ -1,4 +1,5 @@
 from datetime import datetime
+import pprint
 from typing import Any
 from pydantic import BaseModel, Field, TypeAdapter, field_validator
 from pymongo import MongoClient
@@ -51,8 +52,5 @@ def get_user_by_username(username: str) -> MongoUser | None:
 
 
 if __name__ == "__main__":
-    users = list_users()
-    with open("data/mongo_users.json", "wb") as f:
-        f.write(MongoUserList.dump_json(users, indent=2))
-
-    print("Mongo user with username 'alice':", get_user_by_username("alice"))
+    result = client.pythonde.command({"listIndexes": "articles"})
+    pprint.pprint(result)

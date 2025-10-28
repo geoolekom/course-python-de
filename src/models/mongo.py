@@ -1,3 +1,4 @@
+from datetime import datetime
 from mongoengine import (
     EmbeddedDocument,
     IntField,
@@ -17,17 +18,21 @@ class Author(EmbeddedDocument):  # type: ignore[misc]
 class ScientificArticle(Document):  # type: ignore[misc]
     meta = {
         "collection": "articles",
-        "indexes": ["db_id", "arxiv_id"],
+        "indexes": [
+            "db_id",
+            "arxiv_id",
+            "$text",
+        ],
     }
 
-    db_id = IntField(required=True)
+    db_id: int = IntField(required=True)
 
-    title = StringField()
-    summary = StringField()
-    file_path = StringField()
-    created_at = DateTimeField()
+    title: str = StringField()
+    summary: str = StringField()
+    file_path: str = StringField()
+    created_at: datetime = DateTimeField()
 
-    arxiv_id = StringField()
+    arxiv_id: str = StringField()
 
-    author = EmbeddedDocumentField(Author)
-    text = StringField()
+    author: Author = EmbeddedDocumentField(Author)
+    text: str = StringField()

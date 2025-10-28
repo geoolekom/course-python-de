@@ -7,4 +7,5 @@ def list_articles() -> list[ScientificArticle]:
 
 
 if __name__ == "__main__":
-    print(list_articles())
+    for a in list_articles():
+        print(a.text[:100])
