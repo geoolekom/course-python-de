@@ -17,7 +17,7 @@ def save_article(line: pd.Series) -> pd.Series:
             )
             article = ScientificArticle(
                 title=line["title"],
-                summary=line["summary"],
+                summary=line["summary"][:500],
                 file_path=line["file_path"],
                 arxiv_id=line["arxiv_id"],
                 author=author,

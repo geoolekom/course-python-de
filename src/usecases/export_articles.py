@@ -1,8 +1,27 @@
+from pathlib import Path
 import pymupdf4llm
+from urllib.parse import urlparse
+
+import requests
 from models.mongo import ScientificArticle as MongoArticle, Author as MongoAuthor
 import storage.mongo  # noqa: F401
 from mongoengine import DoesNotExist
 import pandas as pd
+
+
+def download_file(article: pd.Series) -> pd.Series:
+    parsed_url = urlparse(article.file_path)
+    if parsed_url.scheme:
+        filename = Path(parsed_url.path).name
+        new_path = f"data/articles/{filename}.pdf"
+        if not Path(new_path).exists():
+            response = requests.get(article.file_path)
+            with open(new_path, "wb") as f:
+                f.write(response.content)
+    else:
+        new_path = article.file_path
+
+    return pd.Series([new_path], index=["local_file_path"])
 
 
 def save_article(article: pd.Series) -> pd.Series:
@@ -12,7 +31,7 @@ def save_article(article: pd.Series) -> pd.Series:
             full_name=article.author_full_name,
             title=article.author_title,
         )
-        md_text = pymupdf4llm.to_markdown(article.file_path)
+        md_text = pymupdf4llm.to_markdown(article.local_file_path)
         kwargs = dict(
             db_id=article.db_id,
             title=article.title,
@@ -40,4 +59,10 @@ def save_article(article: pd.Series) -> pd.Series:
 def create_in_mongo(df: pd.DataFrame) -> pd.DataFrame:
     ids = df.apply(save_article, axis=1)
     df = pd.concat([df, ids], axis=1)
+    return df
+
+
+def download_files(df: pd.DataFrame) -> pd.DataFrame:
+    filenames = df.apply(download_file, axis=1)
+    df = pd.concat([df, filenames], axis=1)
     return df
