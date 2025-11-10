@@ -1,10 +1,11 @@
-from usecases.import_articles import create_in_relational_db, load_from_xml
+from usecases.import_articles import create_in_relational_db
 from usecases.export_articles import create_in_mongo, download_files
 from usecases.search_text import search_text_index
+from usecases.arxiv import fetch_arxiv_articles
 
 if __name__ == "__main__":
     df = (
-        load_from_xml("data/arxiv_articles.xml")
+        fetch_arxiv_articles("proton")
         .pipe(create_in_relational_db)
         .pipe(download_files)
         .pipe(create_in_mongo)
