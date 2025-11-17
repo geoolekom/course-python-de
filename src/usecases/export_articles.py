@@ -48,11 +48,9 @@ def save_article(article: pd.Series) -> pd.Series:
             m_article = MongoArticle(**kwargs)
             m_article.save()
 
-        print(f"Success: {article.arxiv_id}")
         mongo_db_id: str = str(m_article.id)
         return pd.Series([mongo_db_id], index=["mongo_db_id"])
-    except Exception as e:
-        print(f"Failure: {e}")
+    except Exception:
         return pd.Series([""], index=["mongo_db_id"])
 
 
