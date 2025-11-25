@@ -9,7 +9,7 @@ from usecases.arxiv import fetch_arxiv_articles
 
 from tqdm.auto import tqdm
 
-from usecases.vector import check_chunks_in_qdrant
+from usecases.vector import check_chunks_in_qdrant, save_to_qdrant
 
 tqdm.pandas(desc="Loading articles")
 
@@ -22,7 +22,7 @@ if __name__ == "__main__":
         .pipe(chunk_documents)
         .pipe(check_chunks_in_qdrant)
         .pipe(embed_documents)
-        # .pipe(save_to_qdrant)
+        .pipe(save_to_qdrant)
         # .pipe(create_in_mongo)
     )
     print("DataFrame after relational DB insertion:")

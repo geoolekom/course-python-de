@@ -31,11 +31,14 @@ def apply_chunking(
 
 
 def embed_article(article_chunk: pd.Series) -> pd.Series:
+    if article_chunk.exists_in_qdrant:
+        return pd.Series([None], index=["embedding"])
+
     result = client.models.embed_content(
         model="gemini-embedding-001",
         contents=[article_chunk.chunk_text],
         config=types.EmbedContentConfig(
-            output_dimensionality=768, task_type="SEMANTIC_SIMILARITY"
+            output_dimensionality=768, task_type="RETRIEVAL_DOCUMENT"
         ),
     )
 
