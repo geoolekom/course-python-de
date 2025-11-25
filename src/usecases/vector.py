@@ -10,14 +10,12 @@ def get_point_id(article_chunk: pd.Series) -> uuid.UUID:
         uuid.NAMESPACE_URL,
         f"{article_chunk.arxiv_id}_chunk_{article_chunk.chunk_index}",
     )
-    print("POINT ID", point_id)
     return point_id
 
 
 def check_if_chunk_exists(article_chunk: pd.Series) -> pd.Series:
     point_id = get_point_id(article_chunk)
     records = client.retrieve(COLLECTION_NAME, ids=[point_id])
-    print("RECORDS", records)
     return pd.Series([len(records) > 0], index=["exists_in_qdrant"], dtype=bool)
 
 

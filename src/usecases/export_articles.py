@@ -73,6 +73,6 @@ def download_files(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def convert_to_markdown(df: pd.DataFrame) -> pd.DataFrame:
-    texts = df.apply(convert_article_to_markdown, axis=1)
+    texts = df.progress_apply(convert_article_to_markdown, axis=1)  # type: ignore[operator]
     df = pd.concat([df, texts], axis=1)
     return df

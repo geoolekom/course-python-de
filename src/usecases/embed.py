@@ -24,10 +24,7 @@ def apply_chunking(
         chunks.append(chunk.strip())
         start = end - overlap
 
-    contents = chunks[:2]  # For now
-    return pd.Series(
-        [contents, range(len(contents))], index=["chunk_text", "chunk_index"]
-    )
+    return pd.Series([chunks, range(len(chunks))], index=["chunk_text", "chunk_index"])
 
 
 def embed_article(article_chunk: pd.Series) -> pd.Series:
@@ -49,11 +46,11 @@ def embed_article(article_chunk: pd.Series) -> pd.Series:
 
 
 def embed_documents(df: pd.DataFrame) -> pd.DataFrame:
-    results = df.apply(embed_article, axis=1)
+    results = df.progress_apply(embed_article, axis=1)  # type: ignore[operator]
     df = pd.concat([df, results], axis=1)
     return df
 
 
 def chunk_documents(df: pd.DataFrame) -> pd.DataFrame:
-    chunks = df.apply(apply_chunking, axis=1)
+    chunks = df.progress_apply(apply_chunking, axis=1)  # type: ignore[operator]
     return pd.concat([df, chunks], axis=1).explode(["chunk_index", "chunk_text"])
