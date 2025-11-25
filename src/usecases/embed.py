@@ -6,7 +6,7 @@ import numpy as np
 client = genai.Client()
 
 
-def embed_article(
+def apply_chunking(
     article: pd.Series, chunk_size: int = 1000, overlap: int = 200
 ) -> pd.Series:
     text = article.md_text
@@ -24,22 +24,33 @@ def embed_article(
         chunks.append(chunk.strip())
         start = end - overlap
 
-    contents = chunks[:2]
+    contents = chunks[:2]  # For now
+    return pd.Series(
+        [contents, range(len(contents))], index=["chunk_text", "chunk_index"]
+    )
+
+
+def embed_article(article_chunk: pd.Series) -> pd.Series:
     result = client.models.embed_content(
         model="gemini-embedding-001",
-        contents=contents,
+        contents=[article_chunk.chunk_text],
         config=types.EmbedContentConfig(
             output_dimensionality=768, task_type="SEMANTIC_SIMILARITY"
         ),
     )
 
-    embeddings = np.array(
-        [np.array(embedding.values) for embedding in result.embeddings or []]
-    )
-    return pd.Series([contents, embeddings], index=["chunk_texts", "embeddings"])
+    if result.embeddings is None:
+        return pd.Series([None], index=["embedding"])
+
+    return pd.Series([np.array(result.embeddings[0].values)], index=["embedding"])
 
 
 def embed_documents(df: pd.DataFrame) -> pd.DataFrame:
     results = df.apply(embed_article, axis=1)
     df = pd.concat([df, results], axis=1)
     return df
+
+
+def chunk_documents(df: pd.DataFrame) -> pd.DataFrame:
+    chunks = df.apply(apply_chunking, axis=1)
+    return pd.concat([df, chunks], axis=1).explode(["chunk_index", "chunk_text"])

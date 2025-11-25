@@ -2,6 +2,20 @@ import pandas as pd
 from models.chunk import ScientificArticleChunk
 from storage.vector import COLLECTION_NAME, client
 from qdrant_client.models import PointStruct
+import uuid
+
+
+def get_point_id(article_chunk: pd.Series) -> uuid.UUID:
+    return uuid.uuid5(
+        uuid.NAMESPACE_URL,
+        f"{article_chunk.arxiv_id}_chunk_{article_chunk.chunk_index}",
+    )
+
+
+def check_if_chunk_exists(article_chunk: pd.Series) -> pd.Series:
+    point_id = get_point_id(article_chunk)
+    records = client.retrieve(COLLECTION_NAME, ids=[point_id])
+    return pd.Series([len(records) > 0], index=["exists_in_qdrant"], dtype=bool)
 
 
 def insert_embeddings(article: pd.Series) -> pd.Series:
@@ -27,4 +41,10 @@ def insert_embeddings(article: pd.Series) -> pd.Series:
 
 def save_to_qdrant(df: pd.DataFrame) -> pd.DataFrame:
     df.apply(insert_embeddings, axis=1)
+    return df
+
+
+def check_chunks_in_qdrant(df: pd.DataFrame) -> pd.DataFrame:
+    exists = df.apply(check_if_chunk_exists, axis=1)
+    df = pd.concat([df, exists], axis=1)
     return df
